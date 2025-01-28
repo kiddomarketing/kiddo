@@ -105,36 +105,46 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function showProjectPermissionModal(projectUrl) {
-    const permissionModal = document.createElement('div');
-    permissionModal.classList.add('permission-modal');
-    
-    permissionModal.innerHTML = `
-      <div class="permission-content">
-        <h3>Project Viewing Permission Required</h3>
-        <p>This project requires permission from the owner to view.</p>
-        <p>Would you like to request viewing rights?</p>
-        <div class="permission-buttons">
-          <a href="mailto:marketingwycon@gmail.com?subject=Project Viewing Permission Request&body=Hello, I would like to request permission to view the project at: ${projectUrl}" class="request-btn">Request Permission</a>
-          <button class="cancel-btn">Cancel</button>
+    try {
+      const permissionModal = document.createElement('div');
+      permissionModal.classList.add('permission-modal');
+      
+      permissionModal.innerHTML = `
+        <div class="permission-content">
+          <h3>Project Viewing Permission Required</h3>
+          <p>This project requires permission from the owner to view.</p>
+          <p>Would you like to request viewing rights?</p>
+          <div class="permission-buttons">
+            <a href="mailto:marketingwycon@gmail.com?subject=Project Viewing Permission Request&body=Hello, I would like to request permission to view the project at: ${encodeURIComponent(projectUrl)}" class="request-btn">Request Permission</a>
+            <button class="cancel-btn">Cancel</button>
+          </div>
         </div>
-      </div>
-    `;
+      `;
 
-    document.body.appendChild(permissionModal);
+      document.body.appendChild(permissionModal);
 
-    const cancelBtn = permissionModal.querySelector('.cancel-btn');
-    cancelBtn.addEventListener('click', () => {
-      permissionModal.remove();
-    });
+      const cancelBtn = permissionModal.querySelector('.cancel-btn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          permissionModal.remove();
+        });
+      }
+    } catch (error) {
+      console.error('Error showing permission modal:', error);
+    }
   }
 
   // Add project permission handling
   const projectLinks = document.querySelectorAll('.view-project-btn');
   projectLinks.forEach(link => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const projectUrl = link.getAttribute('href');
-      showProjectPermissionModal(projectUrl);
+      try {
+        e.preventDefault();
+        const projectUrl = link.getAttribute('href') || '';
+        showProjectPermissionModal(projectUrl);
+      } catch (error) {
+        console.error('Error handling project link click:', error);
+      }
     });
   });
 
@@ -180,299 +190,396 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
 
-function generateBackgroundAnimation() {
-  const heroSection = document.querySelector('.hero');
-  const animatedBg = document.createElement('div');
-  animatedBg.classList.add('animated-bg');
+  // Add payment handling for bonus bubble
+  const bonusBubble = document.createElement('div');
+  bonusBubble.classList.add('bonus-bubble');
+  bonusBubble.innerHTML = `
+    <h3>Special Business Starter Package</h3>
+    <ul>
+      <li>Social Media Management and Marketing</li>
+      <li>Website Creation and Management</li>
+      <li>Graphics Design (Ksh 150 per poster)</li>
+      <li>Influencer Outreach</li>
+      <li>Content Creation & Strategy</li>
+      <li>SEO Optimization</li>
+      <li>24/7 Support</li>
+    </ul>
+    <div class="price">
+      <span class="original">Ksh 75,000</span>
+      First Month: Ksh 55,000
+    </div>
+    <p>Subsequent months: Ksh 20,000</p>
+    <button class="cta-button">Get Started Now</button>
+  `;
 
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("viewBox", "0 0 100 100");
-  svg.setAttribute("preserveAspectRatio", "none");
+  document.body.appendChild(bonusBubble);
 
-  const colors = ['#FF6B6B', '#FFD700', '#4ECDC4', '#FF9F1C', '#A8E6CE', '#F06292', '#BA68C8', '#673AB7', '#2196F3', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722', '#795548', '#9E9E9E', '#607D8B'];
-
-  for(let i = 0; i < 5; i++) {
-    const shape = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    shape.setAttribute("cx", Math.random() * 100);
-    shape.setAttribute("cy", Math.random() * 100);
-    shape.setAttribute("r", Math.random() * 10 + 5);
-    shape.setAttribute("fill", colors[Math.floor(Math.random() * colors.length)]);
-    shape.classList.add('shape');
-    if(i == 1) {
-      shape.classList.add('shape-2')
-    } else if (i == 2) {
-      shape.classList.add('shape-3')
-    }
-
-    svg.appendChild(shape);
-  }
-  animatedBg.appendChild(svg);
-  heroSection.appendChild(animatedBg);
-  createShatterEffect(heroSection)
-}
-
-function createShatterEffect(container) {
-  const shatterDiv = document.createElement('div');
-  shatterDiv.classList.add('shatter');
-  container.appendChild(shatterDiv)
-  const pieces = 50;
-
-  for(let i = 0; i < pieces; i++) {
-    const piece = document.createElement('div');
-    piece.classList.add('shatter-piece');
-    const size = Math.random() * 10 + 5
-    piece.style.width = `${size}px`;
-    piece.style.height = `${size}px`;
-    const x = Math.random() * 100;
-    const y = Math.random() * 100;
-    piece.style.left = `${x}%`;
-    piece.style.top = `${y}%`;
-    const destinationX = (Math.random() - 0.5) * 500
-    const destinationY = (Math.random() - 0.5) * 500
-    const rotate = Math.random() * 360 - 180
-    const scale = Math.random() * 2 + 1;
-
-    piece.style.setProperty('--x', `${destinationX}px`)
-    piece.style.setProperty('--y', `${destinationY}px`)
-    piece.style.setProperty('--rotate', `${rotate}deg`)
-    piece.style.setProperty('--scale', scale)
-    shatterDiv.appendChild(piece);
-  }
-  setTimeout(() => {
-    shatterDiv.remove()
-  }, 3000)
-}
-
-function playBackgroundMusic() {
-  const audio = new Audio('https://file-examples.com/storage/fe83623805841626e34b7a4/2017/11/file_example_MP3_700KB.mp3');
-  audio.loop = true;
-  audio.volume = 0.3;
-  audio.play()
-    .catch(error => {
-      console.error("Autoplay failed: ", error);
-      // Optional: Show a button to allow user to manually play the audio
+  const bonusBubbleCta = bonusBubble.querySelector('.cta-button');
+  if (bonusBubbleCta) {
+    bonusBubbleCta.addEventListener('click', () => {
+      const modalOverlay = document.querySelector('.modal-overlay');
+      modalOverlay.classList.remove('show');
+      bonusBubble.classList.remove('show');
+      handlePayment('Business Starter Package', '55000');
     });
-}
-
-function createRoadSimulation() {
-  const heroSection = document.querySelector('.hero');
-  const roadSimulation = document.createElement('div')
-  roadSimulation.classList.add('road-simulation')
-
-  const road = document.createElement('div')
-  road.classList.add('road')
-  roadSimulation.appendChild(road)
-
-  const car = document.createElement('div')
-  car.classList.add('car')
-  roadSimulation.appendChild(car)
-
-  const towns = ["Mombasa", "Nairobi", "Kisumu", "Kajiado", "Kapsabet", "Kakamega"]
-  towns.forEach((town, index) => {
-    const townElement = document.createElement('div')
-    townElement.textContent = town
-    townElement.classList.add('town', `town-${index + 1}`)
-    const townMessage = document.createElement('div');
-    townMessage.classList.add('town-message');
-    townMessage.textContent = `Welcome to ${town}!`
-    townElement.appendChild(townMessage)
-    const flag = document.createElement('div')
-    flag.classList.add('town-flag')
-    flag.addEventListener('click', () => {
-      townMessage.classList.add('show');
-      setTimeout(() => {
-        townMessage.classList.remove('show')
-      }, 3000)
-    })
-    townElement.appendChild(flag)
-    roadSimulation.appendChild(townElement)
-  })
-
-  heroSection.appendChild(roadSimulation);
-
-  const carElement = document.querySelector('.car');
-  const townElements = document.querySelectorAll('.town');
-
-  function isElementInView(element) {
-    const rect = element.getBoundingClientRect();
-    return rect.left >= 0 && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
   }
-  let observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting) {
-        entry.target.classList.add('show');
-      } else {
-        entry.target.classList.remove('show')
-      }
-    })
-  }, { threshold: 0.8 });
 
-  townElements.forEach(town => {
-    observer.observe(town)
+  // Create and add bonus teaser
+  const bonusTeaser = document.createElement('div');
+  bonusTeaser.classList.add('bonus-teaser');
+  bonusTeaser.innerHTML = '<i class="fas fa-gift"></i>';
+  document.body.appendChild(bonusTeaser);
+
+  // Create modal overlay
+  const modalOverlay = document.createElement('div');
+  modalOverlay.classList.add('modal-overlay');
+  document.body.appendChild(modalOverlay);
+
+  // Add click handler for bonus teaser
+  bonusTeaser.addEventListener('click', () => {
+    modalOverlay.classList.add('show');
+    bonusBubble.classList.add('show');
   });
 
-  const roadPath = document.querySelector('.road').getAttribute('clip-path');
-
-  const extractPathCoords = (path) => {
-    if (!path) return [];
-
-    const parts = path.match(/([MC]\s[\d\s.,-]+)/g);
-    if(!parts) return []
-    const coords = parts.reduce((acc, part) => {
-      const [type, ...points] = part.split(/\s+/);
-      const pairs = points.filter(val => val !== '').map(Number)
-      for(let i = 0; i < pairs.length; i += 2) {
-        acc.push({x: pairs[i], y: pairs[i + 1]})
-      }
-      return acc
-    }, [])
-    return coords
-  }
-
-  const pathCoords = extractPathCoords(roadPath)
-  if(!pathCoords || pathCoords.length === 0) {
-    console.error("Path coordinates are invalid or empty:", pathCoords)
-    return;
-  }
-
-  function animateCarAlongPath() {
-    let progress = 0;
-    const animationDuration = 25000; // Duration in milliseconds
-
-    function updateCarPosition() {
-      if (progress >= 1) return;
-
-      const currentPointIndex = Math.floor(progress * (pathCoords.length - 1));
-      const nextPointIndex = Math.min(currentPointIndex + 1, pathCoords.length - 1)
-
-      const t = (progress * (pathCoords.length - 1)) % 1;
-
-      const currentPoint = pathCoords[currentPointIndex]
-      const nextPoint = pathCoords[nextPointIndex]
-
-      const x = currentPoint.x + (nextPoint.x - currentPoint.x) * t;
-      const y = currentPoint.y + (nextPoint.y - currentPoint.y) * t
-      carElement.style.left = `${x/12}%`
-      carElement.style.top = `${y / 1.5 + 30}%`;
-      progress += 1 / (animationDuration / 16)
-      requestAnimationFrame(updateCarPosition);
+  // Close modal when clicking overlay
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      modalOverlay.classList.remove('show');
+      bonusBubble.classList.remove('show');
     }
-    updateCarPosition()
-  }
-  animateCarAlongPath()
-}
+  });
 
-function handlePayment(packageName, amount) {
-  const paymentModal = document.createElement('div');
-  paymentModal.classList.add('payment-modal');
-  
-  paymentModal.innerHTML = `
-    <div class="payment-content">
-      <h3>Select Payment Method for ${packageName}</h3>
-      <p class="package-amount">Amount: KSH ${amount}</p>
-      <div class="payment-options">
-        <button class="mpesa-btn">Pay with M-PESA</button>
-        <button class="crypto-btn">Pay with Cryptocurrency</button>
-      </div>
-      <button class="close-modal">×</button>
-    </div>
-  `;
+  // Add close button to bonus bubble
+  const closeBtn = document.createElement('button');
+  closeBtn.classList.add('close-modal');
+  closeBtn.innerHTML = '×';
+  bonusBubble.appendChild(closeBtn);
 
-  document.body.appendChild(paymentModal);
-
-  const closeBtn = paymentModal.querySelector('.close-modal');
   closeBtn.addEventListener('click', () => {
-    paymentModal.remove();
+    modalOverlay.classList.remove('show');
+    bonusBubble.classList.remove('show');
   });
 
-  const mpesaBtn = paymentModal.querySelector('.mpesa-btn');
-  mpesaBtn.addEventListener('click', () => {
-    showMpesaInstructions(packageName, amount);
-  });
+  function handlePayment(packageName, amount) {
+    try {
+      const paymentModal = document.createElement('div');
+      paymentModal.classList.add('payment-modal');
+      
+      paymentModal.innerHTML = `
+        <div class="payment-content">
+          <h3>Select Payment Method for ${packageName}</h3>
+          <p class="package-amount">Amount: KSH ${amount}</p>
+          <div class="payment-options">
+            <button class="mpesa-btn">Pay with M-PESA</button>
+            <button class="crypto-btn">Pay with Cryptocurrency</button>
+          </div>
+          <div class="contact-info">
+            <p><strong>Contact Information:</strong></p>
+            <p><i class="fab fa-whatsapp"></i> WhatsApp/Call: <a href="tel:+254759015580">+254 759 015 580</a></p>
+            <p><i class="far fa-envelope"></i> Email: <a href="mailto:marketingwycon@gmail.com">marketingwycon@gmail.com</a></p>
+          </div>
+          <button class="close-modal">×</button>
+        </div>
+      `;
 
-  const cryptoBtn = paymentModal.querySelector('.crypto-btn');
-  cryptoBtn.addEventListener('click', () => {
-    showCryptoInstructions(packageName, amount);
-  });
-}
+      document.body.appendChild(paymentModal);
 
-function showMpesaInstructions(packageName, amount) {
-  const mpesaModal = document.createElement('div');
-  mpesaModal.classList.add('payment-modal');
-  
-  mpesaModal.innerHTML = `
-    <div class="payment-content">
-      <h3>M-PESA Payment Instructions</h3>
-      <div class="mpesa-details">
-        <p>Please follow these steps:</p>
-        <ol>
-          <li>Go to M-PESA on your phone</li>
-          <li>Select Pay Bill</li>
-          <li>Enter Business Number: <strong>714777</strong></li>
-          <li>Enter Account Number: <strong>0759015580</strong></li>
-          <li>Enter Amount: <strong>KSH ${amount}</strong></li>
-          <li>Enter your M-PESA PIN and confirm</li>
-        </ol>
-        <p class="waiting-text">Waiting for payment confirmation...</p>
-        <p class="timeout-text">If confirmation takes too long, please email your transaction details to:</p>
-        <a href="mailto:marketingwycon@gmail.com" class="email-link">marketingwycon@gmail.com</a>
-      </div>
-      <button class="close-modal">×</button>
-    </div>
-  `;
+      // Add event listeners
+      const closeBtn = paymentModal.querySelector('.close-modal');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          paymentModal.remove();
+        });
+      }
 
-  document.body.appendChild(mpesaModal);
+      const mpesaBtn = paymentModal.querySelector('.mpesa-btn');
+      if (mpesaBtn) {
+        mpesaBtn.addEventListener('click', () => {
+          showMpesaInstructions(packageName, amount);
+          paymentModal.remove();
+        });
+      }
 
-  const closeBtn = mpesaModal.querySelector('.close-modal');
-  closeBtn.addEventListener('click', () => {
-    mpesaModal.remove();
-  });
-
-  // Add timeout message after 2 minutes
-  setTimeout(() => {
-    const waitingText = mpesaModal.querySelector('.waiting-text');
-    if (waitingText) {
-      waitingText.style.color = '#ff6b6b';
-      waitingText.textContent = 'Payment taking longer than expected. Please email your transaction details.';
+      const cryptoBtn = paymentModal.querySelector('.crypto-btn');
+      if (cryptoBtn) {
+        cryptoBtn.addEventListener('click', () => {
+          showCryptoInstructions(packageName, amount);
+          paymentModal.remove();
+        });
+      }
+    } catch (error) {
+      console.error('Error handling payment:', error);
     }
-  }, 120000);
-}
+  }
 
-function showCryptoInstructions(packageName, amount) {
-  const cryptoModal = document.createElement('div');
-  cryptoModal.classList.add('payment-modal');
+  function showMpesaInstructions(packageName, amount) {
+    const mpesaModal = document.createElement('div');
+    mpesaModal.classList.add('payment-modal');
   
-  cryptoModal.innerHTML = `
-    <div class="payment-content">
-      <h3>Cryptocurrency Payment</h3>
-      <p>Please contact us at marketingwycon@gmail.com for cryptocurrency payment instructions.</p>
-      <button class="close-modal">×</button>
-    </div>
-  `;
+    mpesaModal.innerHTML = `
+      <div class="payment-content">
+        <h3>M-PESA Payment Instructions</h3>
+        <div class="mpesa-details">
+          <p>Please follow these steps:</p>
+          <ol>
+            <li>Go to M-PESA on your phone</li>
+            <li>Select Pay Bill</li>
+            <li>Enter Business Number: <strong>714777</strong></li>
+            <li>Enter Account Number: <strong>0759015580</strong></li>
+            <li>Enter Amount: <strong>KSH ${amount}</strong></li>
+            <li>Enter your M-PESA PIN and confirm</li>
+          </ol>
+          <p class="waiting-text">Waiting for payment confirmation...</p>
+          <p class="timeout-text">If confirmation takes too long, please email your transaction details to:</p>
+          <a href="mailto:marketingwycon@gmail.com" class="email-link">marketingwycon@gmail.com</a>
+        </div>
+        <button class="close-modal">×</button>
+      </div>
+    `;
 
-  document.body.appendChild(cryptoModal);
+    document.body.appendChild(mpesaModal);
 
-  const closeBtn = cryptoModal.querySelector('.close-modal');
-  closeBtn.addEventListener('click', () => {
-    cryptoModal.remove();
-  });
-}
+    const closeBtn = mpesaModal.querySelector('.close-modal');
+    closeBtn.addEventListener('click', () => {
+      mpesaModal.remove();
+    });
 
-generateBackgroundAnimation();
-playBackgroundMusic();
-createRoadSimulation()
+    // Add timeout message after 2 minutes
+    setTimeout(() => {
+      const waitingText = mpesaModal.querySelector('.waiting-text');
+      if (waitingText) {
+        waitingText.style.color = '#ff6b6b';
+        waitingText.textContent = 'Payment taking longer than expected. Please email your transaction details.';
+      }
+    }, 120000);
+  }
 
-const rateButton = document.querySelector('.rate-btn');
-rateButton.addEventListener('click', () => {
-  document.querySelector('#rate-card').scrollIntoView({
-    behavior: 'smooth'
-  });
-})
+  function showCryptoInstructions(packageName, amount) {
+    const cryptoModal = document.createElement('div');
+    cryptoModal.classList.add('payment-modal');
+  
+    cryptoModal.innerHTML = `
+      <div class="payment-content">
+        <h3>Cryptocurrency Payment</h3>
+        <p>Please contact us at marketingwycon@gmail.com for cryptocurrency payment instructions.</p>
+        <button class="close-modal">×</button>
+      </div>
+    `;
 
-const heroImage = document.querySelector('.hero-image')
-const triangle = document.createElement('div')
-triangle.classList.add('triangle')
-heroImage.innerHTML = ''
-heroImage.appendChild(triangle)
+    document.body.appendChild(cryptoModal);
+
+    const closeBtn = cryptoModal.querySelector('.close-modal');
+    closeBtn.addEventListener('click', () => {
+      cryptoModal.remove();
+    });
+  }
+
+  function generateBackgroundAnimation() {
+    const heroSection = document.querySelector('.hero');
+    const animatedBg = document.createElement('div');
+    animatedBg.classList.add('animated-bg');
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+    svg.setAttribute("preserveAspectRatio", "none");
+
+    const colors = ['#FF6B6B', '#FFD700', '#4ECDC4', '#FF9F1C', '#A8E6CE', '#F06292', '#BA68C8', '#673AB7', '#2196F3', '#00BCD4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722', '#795548', '#9E9E9E', '#607D8B'];
+
+    for(let i = 0; i < 5; i++) {
+      const shape = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      shape.setAttribute("cx", Math.random() * 100);
+      shape.setAttribute("cy", Math.random() * 100);
+      shape.setAttribute("r", Math.random() * 10 + 5);
+      shape.setAttribute("fill", colors[Math.floor(Math.random() * colors.length)]);
+      shape.classList.add('shape');
+      if(i == 1) {
+        shape.classList.add('shape-2')
+      } else if (i == 2) {
+        shape.classList.add('shape-3')
+      }
+
+      svg.appendChild(shape);
+    }
+    animatedBg.appendChild(svg);
+    heroSection.appendChild(animatedBg);
+    createShatterEffect(heroSection)
+  }
+
+  function createShatterEffect(container) {
+    const shatterDiv = document.createElement('div');
+    shatterDiv.classList.add('shatter');
+    container.appendChild(shatterDiv)
+    const pieces = 50;
+
+    for(let i = 0; i < pieces; i++) {
+      const piece = document.createElement('div');
+      piece.classList.add('shatter-piece');
+      const size = Math.random() * 10 + 5
+      piece.style.width = `${size}px`;
+      piece.style.height = `${size}px`;
+      const x = Math.random() * 100;
+      const y = Math.random() * 100;
+      piece.style.left = `${x}%`;
+      piece.style.top = `${y}%`;
+      const destinationX = (Math.random() - 0.5) * 500
+      const destinationY = (Math.random() - 0.5) * 500
+      const rotate = Math.random() * 360 - 180
+      const scale = Math.random() * 2 + 1;
+
+      piece.style.setProperty('--x', `${destinationX}px`)
+      piece.style.setProperty('--y', `${destinationY}px`)
+      piece.style.setProperty('--rotate', `${rotate}deg`)
+      piece.style.setProperty('--scale', scale)
+      shatterDiv.appendChild(piece);
+    }
+    setTimeout(() => {
+      shatterDiv.remove()
+    }, 3000)
+  }
+
+  function playBackgroundMusic() {
+    const audio = new Audio('https://file-examples.com/storage/fe83623805841626e34b7a4/2017/11/file_example_MP3_700KB.mp3');
+    audio.loop = true;
+    audio.volume = 0.3;
+    audio.play()
+      .catch(error => {
+        console.error("Autoplay failed: ", error);
+        // Optional: Show a button to allow user to manually play the audio
+      });
+  }
+
+  function createRoadSimulation() {
+    const heroSection = document.querySelector('.hero');
+    const roadSimulation = document.createElement('div')
+    roadSimulation.classList.add('road-simulation')
+
+    const road = document.createElement('div')
+    road.classList.add('road')
+    roadSimulation.appendChild(road)
+
+    const car = document.createElement('div')
+    car.classList.add('car')
+    roadSimulation.appendChild(car)
+
+    const towns = ["Mombasa", "Nairobi", "Kisumu", "Kajiado", "Kapsabet", "Kakamega"]
+    towns.forEach((town, index) => {
+      const townElement = document.createElement('div')
+      townElement.textContent = town
+      townElement.classList.add('town', `town-${index + 1}`)
+      const townMessage = document.createElement('div');
+      townMessage.classList.add('town-message');
+      townMessage.textContent = `Welcome to ${town}!`
+      townElement.appendChild(townMessage)
+      const flag = document.createElement('div')
+      flag.classList.add('town-flag')
+      flag.addEventListener('click', () => {
+        townMessage.classList.add('show');
+        setTimeout(() => {
+          townMessage.classList.remove('show')
+        }, 3000)
+      })
+      townElement.appendChild(flag)
+      roadSimulation.appendChild(townElement)
+    })
+
+    heroSection.appendChild(roadSimulation);
+
+    const carElement = document.querySelector('.car');
+    const townElements = document.querySelectorAll('.town');
+
+    function isElementInView(element) {
+      const rect = element.getBoundingClientRect();
+      return rect.left >= 0 && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+    }
+    let observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting) {
+          entry.target.classList.add('show');
+        } else {
+          entry.target.classList.remove('show')
+        }
+      })
+    }, { threshold: 0.8 });
+
+    townElements.forEach(town => {
+      observer.observe(town)
+    });
+
+    const roadPath = document.querySelector('.road').getAttribute('clip-path');
+
+    const extractPathCoords = (path) => {
+      if (!path) return [];
+
+      const parts = path.match(/([MC]\s[\d\s.,-]+)/g);
+      if(!parts) return []
+      const coords = parts.reduce((acc, part) => {
+        const [type, ...points] = part.split(/\s+/);
+        const pairs = points.filter(val => val !== '').map(Number)
+        for(let i = 0; i < pairs.length; i += 2) {
+          acc.push({x: pairs[i], y: pairs[i + 1]})
+        }
+        return acc
+      }, [])
+      return coords
+    }
+
+    const pathCoords = extractPathCoords(roadPath)
+    if(!pathCoords || pathCoords.length === 0) {
+      console.error("Path coordinates are invalid or empty:", pathCoords)
+      return;
+    }
+
+    function animateCarAlongPath() {
+      let progress = 0;
+      const animationDuration = 25000; // Duration in milliseconds
+
+      function updateCarPosition() {
+        if (progress >= 1) return;
+
+        const currentPointIndex = Math.floor(progress * (pathCoords.length - 1));
+        const nextPointIndex = Math.min(currentPointIndex + 1, pathCoords.length - 1)
+
+        const t = (progress * (pathCoords.length - 1)) % 1;
+
+        const currentPoint = pathCoords[currentPointIndex]
+        const nextPoint = pathCoords[nextPointIndex]
+
+        const x = currentPoint.x + (nextPoint.x - currentPoint.x) * t;
+        const y = currentPoint.y + (nextPoint.y - currentPoint.y) * t
+        carElement.style.left = `${x/12}%`
+        carElement.style.top = `${y / 1.5 + 30}%`;
+        progress += 1 / (animationDuration / 16)
+        requestAnimationFrame(updateCarPosition);
+      }
+      updateCarPosition()
+    }
+    animateCarAlongPath()
+  }
+
+  generateBackgroundAnimation();
+  playBackgroundMusic();
+  createRoadSimulation()
+
+  const rateButton = document.querySelector('.rate-btn');
+  if (rateButton) {
+    rateButton.addEventListener('click', () => {
+      const rateCard = document.querySelector('#rate-card');
+      if (rateCard) {
+        rateCard.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    });
+  }
+
+  const heroImage = document.querySelector('.hero-image');
+  if (heroImage) {
+    // Clear any existing content except the image
+    const existingImage = heroImage.querySelector('img');
+    if (existingImage) {
+      heroImage.innerHTML = '';
+      heroImage.appendChild(existingImage);
+    }
+  }
+});
